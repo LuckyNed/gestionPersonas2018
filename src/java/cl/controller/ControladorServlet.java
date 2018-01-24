@@ -5,18 +5,12 @@
  */
 package cl.controller;
 
-import cl.beans.PersonaBean;
 import cl.beans.PersonaBeanLocal;
-import cl.model.IUtilidad;
 import cl.model.Persona;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,9 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "ControladorServlet", urlPatterns = {"/control.do"})
 public class ControladorServlet extends HttpServlet {
 
-    @Inject
-    private IUtilidad utilidad;
-    
+   
     @EJB
     private PersonaBeanLocal service;
     
