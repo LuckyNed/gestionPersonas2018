@@ -5,11 +5,14 @@
  */
 package cl.controller;
 
+import cl.beans.PersonaBean;
+import cl.beans.PersonaBeanLocal;
 import cl.model.IUtilidad;
 import cl.model.Persona;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,6 +30,10 @@ public class ControladorServlet extends HttpServlet {
 
     @Inject
     private IUtilidad utilidad;
+    
+    @EJB
+    private PersonaBeanLocal service;
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String boton = request.getParameter("boton");
@@ -49,33 +56,31 @@ public class ControladorServlet extends HttpServlet {
             throws ServletException, IOException {
         String rut = request.getParameter("rut");
         String activo = request.getParameter("activo");
-        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
         
-        Persona p = utilidad.buscar(rut, list);
-        p.setActivo(activo.equalsIgnoreCase("Si"));
-        getServletContext().setAttribute("data", list);
+        service.editar(rut, activo.equalsIgnoreCase("si"));
+//        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
+//        
+//        Persona p = utilidad.buscar(rut, list);
+//        p.setActivo(activo.equalsIgnoreCase("Si"));
+//        getServletContext().setAttribute("data", list);
         response.sendRedirect("personas.jsp");
         
     }
     protected void procesaRut(HttpServletRequest request, HttpServletResponse response, String boton)
             throws ServletException, IOException {
-        
-        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
-        log("--------------->"+list);
-        log("--------------->"+boton);
-        Persona p = utilidad.buscar(boton, list);
+        Persona p = service.buscar(boton);
+//        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
+//        Persona p = utilidad.buscar(boton, list);
         request.setAttribute("persona", p);
         request.getRequestDispatcher("editarPersona.jsp").forward(request, response);
     }
     protected void login(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String nombre = request.getParameter("rut");
+        String rut = request.getParameter("rut");
         String clave = request.getParameter("clave");
-        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
-        Persona p = null;
-        
-        p = utilidad.loguear(nombre, clave, list);
-        
+//        List<Persona> list = (List<Persona>) getServletContext().getAttribute("data");
+//        Persona p = utilidad.loguear(nombre, clave, list);
+        Persona p = service.loguear(rut, clave);
         if (p == null) {
             request.setAttribute("msg", "Persona no encontrada :(");
             request.getRequestDispatcher("inicio.jsp").forward(request, response);

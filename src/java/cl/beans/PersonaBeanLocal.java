@@ -5,6 +5,8 @@
  */
 package cl.beans;
 
+import cl.model.Persona;
+import java.util.List;
 import javax.ejb.Local;
 
 /**
@@ -13,5 +15,9 @@ import javax.ejb.Local;
  */
 @Local
 public interface PersonaBeanLocal {
-    
+    Persona buscar(String rut);
+    Persona loguear(String rut, String clave);
+    void editar(String rut, boolean activo);
+    List<Persona>  getPersonaList();
+    String add(Persona person);
 }
