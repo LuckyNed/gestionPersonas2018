@@ -7,13 +7,25 @@ package cl.controller;
 
 import cl.beans.PersonaBeanLocal;
 import cl.model.Persona;
+import com.sun.istack.internal.logging.Logger;
 import java.io.IOException;
+import java.util.logging.Level;
+import javax.jms.Queue;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+//import javax.jms.MapMessage;
+import javax.jms.MessageProducer;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 /**
  *
@@ -25,6 +37,13 @@ public class ControladorServlet extends HttpServlet {
    
     @EJB
     private PersonaBeanLocal service;
+    
+    //Definición de Instancias
+    
+    @Resource(mappedName = "jms/QueueFactory")
+    private QueueConnectionFactory factory;
+    @Resource(mappedName = "jms/Queue")
+    private Queue queue;
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -89,6 +108,22 @@ public class ControladorServlet extends HttpServlet {
     }
     protected void registro(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        try{
+            Connection  conex = factory.createConnection();
+            Session sesion = conex.createSession(false,Session.AUTO_ACKNOWLEDGE);
+            MessageProducer msgp = sesion.createProducer(queue);
+            MapMessage mensaje = sesion.createMapMessage();
+            mensaje.setString("mensaje","Hello from servlet");
+            msgp.send(mensaje);
+            msgp.close();
+            sesion.close();
+            conex.close();
+            
+            
+        }
+        catch(JMSException ex){
+            ex.printStackTrace();
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
